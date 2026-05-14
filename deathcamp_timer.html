@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>원패스 스파르타 — 데스캠프 타이머</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0a0c10;
@@ -76,7 +76,8 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    gap: 1rem;
+    gap: 1.2rem;
+    padding-bottom: 4vh;
   }
 
   /* 배경 그리드 */
@@ -90,18 +91,6 @@
     background-size: 60px 60px;
     opacity: 0.2;
     pointer-events: none;
-  }
-
-  .block-badge {
-    font-size: 1.4rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    padding: 0.3rem 1.4rem;
-    border-radius: 2px;
-    background: color-mix(in srgb, var(--accent) 15%, transparent);
-    color: var(--accent);
-    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-    z-index: 1;
   }
 
   .block-title {
@@ -153,83 +142,6 @@
   }
   .next-label span { color: var(--text-muted); }
 
-  /* 하단 시간표 */
-  .schedule-bar {
-    flex-shrink: 0;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: stretch;
-    overflow: hidden;
-  }
-
-  .schedule-bar-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-weight: 700;
-    writing-mode: vertical-rl;
-    padding: 0.6rem 0.5rem;
-    border-right: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .schedule-items {
-    flex: 1;
-    display: flex;
-    align-items: stretch;
-    overflow: hidden;
-  }
-
-  .sitem {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 0.3rem;
-    border-right: 1px solid var(--border);
-    gap: 2px;
-    transition: background 0.3s;
-    position: relative;
-  }
-
-  .sitem:last-child { border-right: none; }
-
-  .sitem.active {
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
-    border-top: 3px solid var(--accent);
-  }
-
-  .sitem.done { opacity: 0.3; }
-
-  .sitem-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    margin-bottom: 2px;
-  }
-  .sitem.done .sitem-dot { background: var(--text-dim); }
-
-  .sitem-name {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .sitem.active .sitem-name { color: var(--accent); }
-  .sitem.done .sitem-name { color: var(--text-dim); }
-
-  .sitem-time {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--text-dim);
-  }
-  .sitem.active .sitem-time { color: var(--text-muted); }
-
   /* accent 색상 */
   .accent-study { --accent: var(--accent-study); }
   .accent-break { --accent: var(--accent-break); }
@@ -249,7 +161,6 @@
   </div>
 
   <div class="timer-panel accent-study" id="timer-panel">
-    <div class="block-badge" id="block-badge">준비</div>
     <div class="block-title" id="block-title">입실</div>
     <div class="timer-digits" id="timer-digits">00:00</div>
     <div class="time-range-label" id="time-range-label">09:20 → 09:40</div>
@@ -259,27 +170,22 @@
     <div class="next-label" id="next-label">다음: <span>-</span></div>
   </div>
 
-  <div class="schedule-bar">
-    <div class="schedule-bar-label">일정</div>
-    <div class="schedule-items" id="schedule-items"></div>
-  </div>
-
 </div>
 
 <script>
 const schedule = [
-  { name: "입실",  type: "break", start: "09:20", end: "09:40", badge: "준비" },
-  { name: "2교시", type: "study", start: "09:40", end: "10:50", badge: "데스캠프" },
-  { name: "휴식",  type: "break", start: "10:50", end: "11:10", badge: "휴식" },
-  { name: "3교시", type: "study", start: "11:10", end: "12:20", badge: "데스캠프" },
-  { name: "점심",  type: "meal",  start: "12:20", end: "13:30", badge: "점심" },
-  { name: "4교시", type: "study", start: "13:30", end: "14:40", badge: "데스캠프" },
-  { name: "휴식",  type: "break", start: "14:40", end: "15:00", badge: "휴식" },
-  { name: "5교시", type: "study", start: "15:00", end: "16:10", badge: "데스캠프" },
-  { name: "휴식",  type: "break", start: "16:10", end: "16:30", badge: "휴식" },
-  { name: "6교시", type: "study", start: "16:30", end: "17:40", badge: "데스캠프" },
-  { name: "저녁",  type: "meal",  start: "17:40", end: "18:50", badge: "저녁" },
-  { name: "7교시", type: "study", start: "18:50", end: "20:20", badge: "데스캠프" },
+  { name: "입실",  type: "break", start: "09:20", end: "09:40" },
+  { name: "2교시", type: "study", start: "09:40", end: "10:50" },
+  { name: "휴식",  type: "break", start: "10:50", end: "11:10" },
+  { name: "3교시", type: "study", start: "11:10", end: "12:20" },
+  { name: "점심",  type: "meal",  start: "12:20", end: "13:30" },
+  { name: "4교시", type: "study", start: "13:30", end: "14:40" },
+  { name: "휴식",  type: "break", start: "14:40", end: "15:00" },
+  { name: "5교시", type: "study", start: "15:00", end: "16:10" },
+  { name: "휴식",  type: "break", start: "16:10", end: "16:30" },
+  { name: "6교시", type: "study", start: "16:30", end: "17:40" },
+  { name: "저녁",  type: "meal",  start: "17:40", end: "18:50" },
+  { name: "7교시", type: "study", start: "18:50", end: "20:20" },
 ];
 
 function toSec(str) {
@@ -289,24 +195,6 @@ function toSec(str) {
 function pad(n) { return String(n).padStart(2, "0"); }
 function formatRemain(sec) {
   return pad(Math.floor(sec / 60)) + ":" + pad(sec % 60);
-}
-
-function buildSchedule(activeIdx) {
-  const items = document.getElementById("schedule-items");
-  items.innerHTML = "";
-  schedule.forEach((b, i) => {
-    const el = document.createElement("div");
-    el.className = i === activeIdx ? "sitem active" : i < activeIdx ? "sitem done" : "sitem";
-    const accent = b.type === "study" ? "var(--accent-study)"
-                 : b.type === "meal"  ? "var(--accent-meal)" : "var(--accent-break)";
-    el.style.setProperty("--accent", accent);
-    el.innerHTML = `
-      <div class="sitem-dot"></div>
-      <div class="sitem-name">${b.name}</div>
-      <div class="sitem-time">${b.start}</div>
-    `;
-    items.appendChild(el);
-  });
 }
 
 function updateClock() {
@@ -347,7 +235,6 @@ function tick() {
   const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
   const panel  = document.getElementById("timer-panel");
-  const badge  = document.getElementById("block-badge");
   const title  = document.getElementById("block-title");
   const digits = document.getElementById("timer-digits");
   const range  = document.getElementById("time-range-label");
@@ -366,7 +253,6 @@ function tick() {
                    : schedule[i].type === "meal"  ? "accent-meal" : "accent-break";
 
       panel.className    = "timer-panel " + ac;
-      badge.textContent  = schedule[i].badge;
       title.textContent  = schedule[i].name;
       digits.textContent = formatRemain(remain);
       range.textContent  = schedule[i].start + " → " + schedule[i].end;
@@ -377,7 +263,6 @@ function tick() {
 
       if (lastBlockIdx !== null && lastBlockIdx !== i) soundStart();
       lastBlockIdx = i;
-      buildSchedule(i);
       found = true;
       break;
     }
@@ -388,7 +273,6 @@ function tick() {
     if (nowSec < firstSec) {
       const remain = firstSec - nowSec;
       panel.className    = "timer-panel accent-break";
-      badge.textContent  = "대기";
       title.textContent  = "입실 전";
       digits.textContent = formatRemain(remain);
       range.textContent  = "입실 시작 → " + schedule[0].start;
@@ -396,10 +280,8 @@ function tick() {
       next.innerHTML     = `입실까지 <span>${formatRemain(remain)}</span>`;
       if (lastBlockIdx !== null) soundEnd();
       lastBlockIdx = null;
-      buildSchedule(-1);
     } else {
       panel.className    = "timer-panel accent-done";
-      badge.textContent  = "종료";
       title.textContent  = "오늘 일정 완료";
       digits.textContent = "수고하셨습니다!";
       range.textContent  = "모든 일정이 끝났습니다";
@@ -407,7 +289,6 @@ function tick() {
       next.innerHTML     = `<span>내일도 힘냅시다!</span>`;
       if (lastBlockIdx !== null) soundEnd();
       lastBlockIdx = -99;
-      buildSchedule(schedule.length);
     }
   }
 }
